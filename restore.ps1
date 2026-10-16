@@ -79,7 +79,7 @@ if ($isRepo) {
 $agentDir = Join-Path $TargetDir "agent"
 
 Write-Step "校验必需文件"
-$required = @("settings.json", "AGENTS.md", "mcp.json")
+$required = @("settings.json", "AGENTS.md")
 foreach ($name in $required) {
     $full = Join-Path $agentDir $name
     if (Test-Path $full) { Write-Ok $name } else { Write-Note ("缺少 " + $name) }
@@ -94,6 +94,11 @@ if (Test-Path (Join-Path $agentDir "auth.json")) {
     Write-Note "auth.json 已存在：请确认属于本机；该文件不应被提交。"
 } else {
     Write-Note "尚未登录：启动 pi 后执行 /login 写入本机凭据。"
+}
+if (Test-Path (Join-Path $agentDir "mcp.json")) {
+    Write-Ok "mcp.json（手动放置，不入库）"
+} else {
+    Write-Note "mcp.json 未纳入仓库且尚未放置：需要时从手动备份复制到 agent 目录（含凭据，勿提交）。"
 }
 if ([string]::IsNullOrWhiteSpace($env:PADDLEOCR_MCP_AISTUDIO_ACCESS_TOKEN)) {
     Write-Note "PP-OCRv6 MCP 的令牌由环境变量提供（该 server 默认 disabled）。需要时执行："
@@ -111,5 +116,5 @@ if ($pi) {
 }
 
 Write-Step "完成"
-Write-Host "未同步项（需各机器自行处理）：auth.json、mcp-auth.json、sessions/、npm/node_modules、日志、models-store.json"
+Write-Host "未同步项（需各机器自行处理）：auth.json、mcp.json、mcp-auth.json、sessions/、npm/node_modules、日志、models-store.json"
 Write-Host "详见 RESTORE.md"

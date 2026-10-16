@@ -7,9 +7,12 @@
 # ---------- 1. 凭据：绝对不入库 ----------
 # 仓库可能被推送到远程，凭据一旦提交将永久留在 git 历史中。
 agent/auth.json
+# mcp.json 内含明文 ACCESS TOKEN，不纳入同步；由使用者手动备份并放置到各机器。
+agent/mcp.json
 agent/mcp-auth.json
 agent/trust.json
 **/auth.json
+**/mcp.json
 **/*credential*.json
 **/*token*.json
 **/*secret*.json

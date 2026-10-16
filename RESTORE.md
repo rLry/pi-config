@@ -4,7 +4,7 @@
 
 - 仓库根 = `~/.pi`，托管内容实际全部位于 `~/.pi/agent`
 - 远程：`git@github.com:rLry/pi-config.git`（SSH，新机器需自备 `~/.ssh` 密钥）
-- **凭据不随仓库同步**：`auth.json`、`mcp-auth.json` 已被 `.gitignore` 排除
+- **凭据不随仓库同步**：`auth.json`、`mcp.json`、`mcp-auth.json` 已被 `.gitignore` 排除，需手动备份并在各机器放置
 
 ## 一、同步范围
 
@@ -14,7 +14,6 @@
 |---|---|
 | `agent/settings.json` | 偏好、默认模型、`packages` 声明、工具开关 |
 | `agent/AGENTS.md` | 全局规则（跨目录生效） |
-| `agent/mcp.json` | MCP 服务器定义（令牌已改为环境变量插值） |
 | `agent/AGENTS.override.md` / `SYSTEM.md` / `APPEND_SYSTEM.md` / `keybindings.json` / `models.json` / `themes/` | 存在即入库 |
 | `agent/skills/**` | 11 个技能及其脚本、schema、参考资料（约 3.6 MB） |
 | `agent/prompts/**` | 4 个提示词模板 |
@@ -26,6 +25,7 @@
 | 路径 | 理由 |
 |---|---|
 | `agent/auth.json`、`agent/mcp-auth.json`、`agent/trust.json` | 凭据 / 本机路径信任记录，入库即泄露 |
+| `agent/mcp.json` | MCP 服务器定义，含明文 ACCESS TOKEN；由使用者手动备份并放置到各机器 |
 | `agent/sessions/` | 目录名按工作目录路径编码（`--C--Users-denote--`），跨机器无意义；含会话正文且持续膨胀 |
 | `agent/models-store.json` | pi.dev 模型目录缓存，含 `etag`/`checkedAt` 本机抓取元数据，跨机器同步会互相污染；用 `pi update --models` 重建 |
 | `agent/npm/**`（仅保留其自带 `.gitignore`） | 依赖目录（32 MB），由 `pi update --extensions` 依据 `settings.json` 重建 |
@@ -35,7 +35,7 @@
 
 ## 二、新机器恢复
 
-前置：已安装 pi（`scoop install pi-coding-agent` 或 `npm i -g @earendil-works/pi`）与 git；若 `~/.pi` 已存在，`restore.ps1` 会先把旧目录改名为 `.bak-<时间戳>` 而**不删除**。
+前置：已安装 pi（`scoop install pi-coding-agent` 或 `npm i -g @earendil-works/pi`）与 git；若 `~/.pi` 已存在，`restore.ps1` 会先把旧目录改名为 `.bak-<时间戳>` 而**不删除**。另需准备 `auth.json` 与 `mcp.json` 的手动备份。
 
 ```powershell
 # 1. 克隆（脚本同时校验必需文件、提示登录、重装扩展）
@@ -46,8 +46,9 @@ git clone git@github.com:rLry/pi-config.git "$env:USERPROFILE\.pi"
 ```
 
 ```powershell
-# 2. 凭据：auth.json 不在仓库中，需在本机重新登录
+# 2. 凭据：auth.json 与 mcp.json 不在仓库中
 pi          # 进入交互后执行 /login，选择 provider 并完成认证
+Copy-Item <你的备份>\mcp.json "$env:USERPROFILE\.pi\agent\mcp.json"   # 手动放置 MCP 定义
 
 # 3. 重装扩展（依据 settings.json 的 packages 声明）
 pi update --extensions
@@ -66,6 +67,7 @@ pi update --models
 ```powershell
 Test-Path "$env:USERPROFILE\.pi\agent\settings.json"   # True
 Test-Path "$env:USERPROFILE\.pi\agent\auth.json"       # 应为 True（本机新登录产生）
+Test-Path "$env:USERPROFILE\.pi\agent\mcp.json"        # 应为 True（手动放置，不同步）
 Test-Path "$env:USERPROFILE\.pi\agent\sessions"        # 应为 False（不同步，首次运行后自动生成）
 pi list                                                # 三个扩展均应已安装
 ```
@@ -85,7 +87,7 @@ git push
 
 1. **`settings.json` 中的 `shellPath`**：当前为 `~/scoop/apps/git/current/bin/bash.exe`，是唯一机器相关字段。另一台机器若 bash 位置不同，需本地修改；`~` 会展开为各机自己的家目录。
 2. **SSH 密钥不在仓库内**（`~/.ssh` 属禁止读取区），新机器必须自行配置 GitHub SSH key，否则无法 `push` / `clone`。
-3. **`mcp.json` 的令牌占位符**：值为 `$PADDLEOCR_MCP_AISTUDIO_ACCESS_TOKEN`，pi 支持 `$NAME` / `${NAME}` 环境变量插值。该 server 默认关闭，未设环境变量不影响使用。
+3. **`mcp.json` 与 `auth.json` 不入库**：两者含凭据。`auth.json` 由各机器 `/login` 重新生成；`mcp.json` 属手工维护文件，由使用者手动复制到各机器——不参与版本管理反而避免了跨机器冲突。
 4. **`models-store.json` 与 `sessions/` 不同步**：前者可重建，后者属本机过程数据。若确实需要跨机续聊历史，可单独放宽 `.gitignore`（须自行承担体积与路径不匹配问题）。
 5. **切勿提交凭据**：提交前用 `git status` 复核；若误提交，需改写历史（`git filter-repo`）并在 provider 侧吊销密钥。
 6. 仓库级 git 配置已设：`core.autocrlf=false`、`core.longpaths=true`、`core.quotepath=false`、`core.symlinks=false`；`.gitattributes` 用 `* -text` 禁止行尾转换，保证跨平台内容一致。
