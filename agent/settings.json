@@ -1,0 +1,32 @@
+{
+  "shellPath": "~/scoop/apps/git/current/bin/bash.exe",
+  "lastChangelogVersion": "1.3.0",
+  "theme": "dark",
+  "packages": [
+    "npm:@gotgenes/pi-permission-system",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:@juicesharp/rpiv-ask-user-question"
+  ],
+  "defaultTools": [
+    "-bash",
+    "+powershell",
+    "+grep",
+    "+find",
+    "+ls"
+  ],
+  "defaultProvider": "deepseek",
+  "defaultModel": "deepseek-flash",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true,
+  "showHardwareCursor": true,
+  "enableInstallTelemetry": false,
+  "tuiMode": "regular",
+  "offline": true,
+  "skipVersionCheck": true,
+  "images": {
+    "blockImages": false
+  },
+  "extensions": [
+    "-builtin:llama.cpp"
+  ]
+}

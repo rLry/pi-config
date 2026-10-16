@@ -1,0 +1,53 @@
+# ============================================================
+# ~/.pi 备份仓库 —— 忽略规则
+# 原则：手工维护的配置与知识资产入库；
+#       凭据、运行期状态、可重建缓存、依赖目录、机器噪音一律排除。
+# ============================================================
+
+# ---------- 1. 凭据：绝对不入库 ----------
+# 仓库可能被推送到远程，凭据一旦提交将永久留在 git 历史中。
+agent/auth.json
+agent/mcp-auth.json
+agent/trust.json
+**/auth.json
+**/*credential*.json
+**/*token*.json
+**/*secret*.json
+
+# ---------- 2. 会话历史 ----------
+# 目录名按工作目录路径编码（如 --C--Users-denote--），跨机器无意义；
+# 内容含提示词、文件内容与本机路径，且体积持续增长。
+agent/sessions/
+
+# ---------- 3. 日志与调试输出 ----------
+*.log
+*.log.[0-9]
+agent/logs/
+agent/extensions/**/logs/
+agent/pi-debug.log
+
+# ---------- 4. 可重建的缓存与生成物 ----------
+# 模型目录缓存：`pi update --models` 重建；含 etag/checkedAt 等本机抓取元数据，
+# 跨机器同步会导致陈旧目录互相覆盖。
+agent/models-store.json
+agent/cache/
+**/.cache/
+
+# ---------- 5. 依赖目录 ----------
+# 由 `pi update --extensions` 依据 settings.json 的 packages 声明重建。
+# 注：agent/npm/ 下另有 pi 自带的 .gitignore（`*` + `!.gitignore`），
+#     该目录整体只保留那一个占位文件。
+agent/npm/node_modules/
+**/node_modules/
+**/.venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ---------- 6. 操作系统 / 编辑器噪音 ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~

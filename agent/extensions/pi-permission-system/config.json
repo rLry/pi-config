@@ -1,0 +1,63 @@
+{
+  "shellTools": {
+    "powershell": { "commandArgument": "command" }
+  },
+  "permission": {
+    "*": "allow",
+    "path": {
+      "*": "allow",
+      "~/OneDrive/**": "deny",
+      "~/notes/**": "deny",
+      "~/.ssh/**": "deny",
+      "~/.emacs.d/api_key*": { "action": "deny", "reason": "API 密钥文件，禁止读取" },
+      "~/.pi/agent/mcp.json": { "action": "deny", "reason": "MCP 配置含凭据，禁止读取" },
+      "~/.visionpower/config.json": { "action": "deny", "reason": "视觉 API 密钥配置，禁止读取" },
+      "~/.pi/agent/auth.json": { "action": "deny", "reason": "凭据文件，禁止读取" }
+    },
+    "external_directory": { "*": "ask" },
+    "external_directory_read": { "*": "allow" },
+    "external_directory_write": { "*": "ask" },
+    "bash": {
+      "*": "allow",
+      "cat *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "ls *": "allow",
+      "stat *": "allow",
+      "wc *": "allow",
+      "du *": "allow",
+      "df *": "allow",
+      "grep *": "allow",
+      "egrep *": "allow",
+      "fgrep *": "allow",
+      "rg *": "allow",
+      "find *": "allow",
+      "fd *": "allow",
+      "diff *": "allow",
+      "pwd": "allow",
+      "whoami": "allow",
+      "which *": "allow",
+      "git status": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "git branch": "allow",
+      "scoop list": "allow",
+      "scoop search *": "allow",
+      "where.exe *": "allow",
+      "mv *": "ask",
+      "rename *": "ask",
+      "sudo *": "ask",
+      "rm *": "deny",
+      "del *": "deny",
+      "rd *": "deny",
+      "rmdir *": "deny",
+      "erase *": "deny",
+      "ri *": "deny",
+      "Remove-Item *": "deny",
+      "shred *": "deny",
+      "Move-Item *": "ask",
+      "Rename-Item *": "ask"
+    }
+  }
+}

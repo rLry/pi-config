@@ -1,0 +1,13 @@
+# 禁用行尾转换：git 对象与磁盘内容逐字节一致，
+# 避免在 Windows / macOS / Linux 之间往返时产生纯换行符差异的伪改动。
+* -text
+
+# 二进制资源显式标记（同时关闭 diff，减少噪音）
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.ico  binary
+*.gif  binary
+*.wasm binary
+*.exe  binary
+*.zip  binary
