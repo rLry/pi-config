@@ -28,5 +28,6 @@
   },
   "extensions": [
     "-builtin:llama.cpp"
-  ]
+  ],
+  "showCacheMissNotices": true
 }

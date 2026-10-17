@@ -54,3 +54,6 @@ Thumbs.db
 desktop.ini
 *.swp
 *~
+agent/pi-web-session-index.json
+agent/pi-web-session-state.json
+agent/pi-web-run/
